@@ -43,7 +43,7 @@ fi
 
 # creating an motd...
 line_one="\u00a7b\u00a7lProject Ayu\u00a7b \/ ${universe:+u: $universe >} ${world:+w: $world}\u00a7r"
-if [ -a motd_lines ] && [ "$line_two" ]; then  # getting a random line from a file
+if [ -a motd_lines ] && [ -z "$line_two" ]; then  # getting a random line from a file
 	line_two=$(shuf -n 1 motd_lines)
 else
 	line_two=""
