@@ -1,0 +1,11 @@
+# get your own content
+*
+
+# probably some important files
+README.md
+LICENSE.txt
+.gitignore
+
+# scripts included
+start.sh
+download-server.sh
