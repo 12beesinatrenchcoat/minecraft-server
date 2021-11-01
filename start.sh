@@ -1,18 +1,23 @@
 #!/bin/bash
 
-# help text
-Help() {
-	echo "starts a minecraft server!"
-	echo
-	echo "-h    Help!"
-	echo "-u    Select a universe"
-	echo "-w    Select a world"
-}
-
 # default vars
 universe=""
 world=""
-memory=2048
+memory=2048  # in megabytes.
+
+# colors!
+RED='\033[0;31m'
+GRN='\033[0;32m'
+NC='\033[0m'
+
+# help text
+Help() {
+	echo -e "starts a minecraft server!"
+	echo -e
+	echo -e "-h    Help!"
+	echo -e "-u    Select a universe"
+	echo -e "-w    Select a world"
+}
 
 # process inputs
 while getopts u:w:h flag; do
@@ -20,17 +25,23 @@ while getopts u:w:h flag; do
 		h) Help
 		   exit;;
 
-		u) universe=${OPTARG}
-		   echo $universe > last_universe;;
+		u) universe="${OPTARG}";;
 
 		w) world=${OPTARG};;
+
+		*) echo -e "ERROR: Invalid flag."
+		   exit;;
 	esac
 done
 
-if [ $universe ] && [ -z $world ]; then
-	echo "ERROR: A universe is defined, but a world is not."
+if [ "$universe" ] && [ -z "$world" ]; then
+	echo -e "${RED}ERROR: A universe is defined, but a world is not.${NC}"
 	exit 1;
 fi
+
+# creating an motd...
+line_one="\u00a7b\u00a7lProject Ayu\u00a7b \/ ${universe:+u: $universe >} ${world:+w: $world}\u00a7r"
+line_two="second line"
 
 cat > server.properties <<- EOM
 	#Minecraft server properties
@@ -56,7 +67,7 @@ cat > server.properties <<- EOM
 	level-name=${world}
 	rcon.password=
 	player-idle-timeout=0
-	motd=A Minecraft Server
+	motd=${line_one}\n${line_two}
 	query.port=25565
 	force-gamemode=false
 	rate-limit=0
@@ -85,18 +96,20 @@ cat > server.properties <<- EOM
 	max-world-size=29999984
 EOM
 
-echo "starting up server using ${universe:+universe $universe and }world ${world}..."
+echo -e "${GRN}starting up server using ${universe:+universe $universe and }world ${world}...${NC}"
 
 if [ -a fabric-server-launch.jar ]; then
 	serverjar="fabric-server-launch.jar"
 elif [ -a server.jar ]; then
 	serverjar="server.jar"
 else
-	echo "ERROR: could not find server jar."
+	echo -e "${RED}ERROR: could not find server jar.${NC}"
 fi
 
-echo "using ${serverjar} with ${memory}M of memory..."
+echo -e "${GRN}using ${serverjar} with ${memory}M of memory...${NC}"
 
-java -Xmx${memory}M -Xms${memory}M -jar ${serverjar} ${universe:+--universe $universe } ${world:+ --world $world}
+java -Xmx${memory}M -Xms${memory}M -jar ${serverjar} ${universe:+--universe universes/$universe } ${world:+ --world $world} --nogui
+
+echo -e "${RED}server has stopped!${NC}" 
 
 exit 0;
