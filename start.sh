@@ -35,6 +35,7 @@ while getopts u:w:h flag; do
 	esac
 done
 
+# error if universe is given, but no world
 if [ "$universe" ] && [ -z "$world" ]; then
 	echo -e "${RED}ERROR: A universe is defined, but a world is not.${NC}"
 	exit 1;
@@ -103,12 +104,14 @@ EOM
 
 echo -e "${GRN}starting up server using ${universe:+universe $universe and }world ${world}...${NC}"
 
+# check for server jar
 if [ -a fabric-server-launch.jar ]; then
 	serverjar="fabric-server-launch.jar"
 elif [ -a server.jar ]; then
 	serverjar="server.jar"
 else
 	echo -e "${RED}ERROR: could not find server jar.${NC}"
+	exit 1;
 fi
 
 echo -e "${GRN}using ${serverjar} with ${memory}M of memory...${NC}"
