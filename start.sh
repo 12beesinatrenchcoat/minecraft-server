@@ -4,6 +4,7 @@
 universe=""
 world=""
 memory=2048  # in megabytes.
+line_two=""  # of motd
 
 # colors!
 RED='\033[0;31m'
@@ -41,7 +42,11 @@ fi
 
 # creating an motd...
 line_one="\u00a7b\u00a7lProject Ayu\u00a7b \/ ${universe:+u: $universe >} ${world:+w: $world}\u00a7r"
-line_two="second line"
+if [ -a motd_lines ] && [ "$line_two" ]; then  # getting a random line from a file
+	line_two=$(shuf -n 1 motd_lines)
+else
+	line_two=""
+fi
 
 cat > server.properties <<- EOM
 	#Minecraft server properties
